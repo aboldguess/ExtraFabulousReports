@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from app import app, db, Document
+from app import app, db, Document, render_figures_and_refs
 
 @pytest.fixture
 def client():
@@ -39,6 +39,18 @@ def test_navbar_links_visible_after_login(client):
     # The document list page should include the navigation links
     assert b'Instructions' in response.data
     assert b'Help' in response.data
+
+
+def test_render_figures_and_refs():
+    """Custom figure and reference syntax expands to LaTeX code."""
+    sample = (
+        "See {{ref:sample}} for details.\n"
+        "{{figure:static/uploads/img.png|Example caption|sample}}"
+    )
+    processed = render_figures_and_refs(sample)
+    assert "\\includegraphics{static/uploads/img.png}" in processed
+    assert "\\caption{Example caption}" in processed
+    assert "Figure \\ref{fig:sample}" in processed
 
 
 def test_delete_document(client):
