@@ -133,6 +133,42 @@ def render_figures_and_refs(text: str) -> str:
 
     return text
 
+def build_equation(lhs: str, rhs: str, label: str | None = None) -> str:
+    """Construct a LaTeX equation environment from its components.
+
+    Parameters
+    ----------
+    lhs:
+        The left-hand side of the equation.
+    rhs:
+        The right-hand side of the equation.
+    label:
+        Optional label for cross-referencing. When provided, a ``\\label``
+        statement with an ``eq:`` prefix is included.
+
+    Returns
+    -------
+    str
+        A complete LaTeX ``equation`` environment containing the expression
+        and optional label.
+    """
+
+    # Combine the left and right expressions into a single equation string.
+    equation = f"{lhs} = {rhs}"
+
+    # Build up the lines of the LaTeX ``equation`` environment.
+    lines = ["\\begin{equation}", equation]
+
+    # If a label was supplied, append it using the common ``eq:`` prefix so
+    # writers can reference the equation later.
+    if label:
+        lines.append(f"\\label{{eq:{label}}}")
+
+    # Close the environment. Joining the list with newlines keeps the output
+    # readable when the LaTeX is inspected directly or embedded in templates.
+    lines.append("\\end{equation}")
+    return "\n".join(lines)
+
 # ----------------------------------------------------------------------------
 # Flask-Login configuration
 # ----------------------------------------------------------------------------

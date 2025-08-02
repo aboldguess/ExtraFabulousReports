@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from app import app, db, Document, render_figures_and_refs
+from app import app, db, Document, render_figures_and_refs, build_equation
 
 @pytest.fixture
 def client():
@@ -51,6 +51,17 @@ def test_render_figures_and_refs():
     assert "\\includegraphics{static/uploads/img.png}" in processed
     assert "\\caption{Example caption}" in processed
     assert "Figure \\ref{fig:sample}" in processed
+
+
+def test_build_equation():
+    """Equation builder should assemble a full LaTeX equation block."""
+    result = build_equation("E", "mc^2", label="mass_energy")
+    # The environment lines should wrap the expression
+    assert "\\begin{equation}" in result
+    assert "E = mc^2" in result
+    # The optional label is prefixed with ``eq:`` for consistency
+    assert "\\label{eq:mass_energy}" in result
+    assert result.strip().endswith("\\end{equation}")
 
 
 def test_delete_document(client):
