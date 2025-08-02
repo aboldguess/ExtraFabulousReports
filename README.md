@@ -9,6 +9,7 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 - Upload images for use in documents
 - Dedicated instructions and help pages linked in the navigation bar
 - Simple markup for figures with captions and cross-references
+- Helper to programmatically build LaTeX equation blocks
 
 ## Quick start
 1. Install dependencies:
@@ -26,4 +27,23 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 Run the minimal test suite with:
 ```bash
 python -m pytest
+```
+
+## Equation builder example
+Generate a LaTeX equation environment from Python code:
+
+```python
+from app import build_equation
+
+latex = build_equation("E", "mc^2", label="mass_energy")
+print(latex)
+```
+
+This prints:
+
+```
+\begin{equation}
+E = mc^2
+\label{eq:mass_energy}
+\end{equation}
 ```
