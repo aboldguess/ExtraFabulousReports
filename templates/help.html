@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-3">Help</h2>
+{# Offer troubleshooting advice and contact information #}
+<p>If you run into problems while using ExtraFabulousReports, try the following:</p>
+<ul>
+    <li>Review the <a href="{{ url_for('instructions') }}">instructions</a> for guidance on common tasks.</li>
+    <li>Check that your LaTeX compiles locally if a document fails to compile on the server.</li>
+    <li>Contact your system administrator for account or configuration issues.</li>
+</ul>
+<p>Additional support may be provided by your team or organisation.</p>
+{% endblock %}

@@ -7,6 +7,7 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 - Administrator role for configuring the LaTeX house style
 - Create, edit and compile LaTeX documents into PDFs
 - Upload images for use in documents
+- Dedicated instructions and help pages linked in the navigation bar
 
 ## Quick start
 1. Install dependencies:
