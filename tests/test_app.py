@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from app import app, db
+from app import app, db, Document
 
 @pytest.fixture
 def client():
@@ -39,3 +39,36 @@ def test_navbar_links_visible_after_login(client):
     # The document list page should include the navigation links
     assert b'Instructions' in response.data
     assert b'Help' in response.data
+
+
+def test_delete_document(client):
+    """Users can remove their own documents from the database."""
+    # Register and log in
+    client.post('/register', data={'username': 'alice', 'password': 'pw'})
+    client.post('/login', data={'username': 'alice', 'password': 'pw'})
+    # Create a document
+    client.post('/documents/new', data={'title': 'Doc', 'content': 'Hello'})
+    with app.app_context():
+        doc = Document.query.first()
+        # Delete the document
+        client.post(f'/documents/{doc.id}/delete')
+        assert Document.query.count() == 0
+
+
+def test_delete_document_requires_owner(client):
+    """Only the document owner may delete it."""
+    # User A creates a document
+    client.post('/register', data={'username': 'alice', 'password': 'pw'})
+    client.post('/login', data={'username': 'alice', 'password': 'pw'})
+    client.post('/documents/new', data={'title': 'Doc', 'content': 'Hello'})
+    client.get('/logout')
+    # User B attempts deletion
+    client.post('/register', data={'username': 'bob', 'password': 'pw'})
+    client.post('/login', data={'username': 'bob', 'password': 'pw'})
+    with app.app_context():
+        doc = Document.query.first()
+    res = client.post(f'/documents/{doc.id}/delete')
+    assert res.status_code == 403
+    # Ensure document still exists
+    with app.app_context():
+        assert Document.query.count() == 1

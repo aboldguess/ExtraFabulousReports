@@ -234,6 +234,24 @@ def compile_document(doc_id):
     return send_file(pdf_path, as_attachment=True)
 
 # ----------------------------------------------------------------------------
+# Document deletion route
+# ----------------------------------------------------------------------------
+
+@app.route('/documents/<int:doc_id>/delete', methods=['POST'])
+@login_required
+def delete_document(doc_id: int):
+    """Remove a document owned by the current user."""
+    # Look up the document and ensure the requester owns it; otherwise abort
+    doc = Document.query.get_or_404(doc_id)
+    if doc.author != current_user:
+        abort(403)
+    # Delete the document and persist the change
+    db.session.delete(doc)
+    db.session.commit()
+    flash('Document deleted')
+    return redirect(url_for('list_documents'))
+
+# ----------------------------------------------------------------------------
 # Image upload route
 # ----------------------------------------------------------------------------
 
