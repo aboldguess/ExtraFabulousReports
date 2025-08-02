@@ -66,9 +66,13 @@ class Document(db.Model):
     author = db.relationship('User', backref='documents')
 
 class HouseStyle(db.Model):
-    """Single-row table storing the LaTeX style/preamble."""
+    """Single-row table storing the LaTeX style/preamble and colour theme."""
     id = db.Column(db.Integer, primary_key=True)
     style = db.Column(db.Text, default='')
+    # Hex colour used for headers, links and buttons across the UI
+    primary_color = db.Column(db.String(7), default="#003366")
+    # Secondary colour for page background and text
+    secondary_color = db.Column(db.String(7), default="#ffffff")
 
 # ----------------------------------------------------------------------------
 # Flask-Login configuration
@@ -85,10 +89,13 @@ def load_user(user_id: str):
 
 @app.cli.command('init-db')
 def init_db():
-    """Create database tables and ensure a HouseStyle row exists."""
+    """Create database tables and ensure a HouseStyle row with defaults exists."""
     db.create_all()
     if not HouseStyle.query.first():
-        db.session.add(HouseStyle(style=''))
+        # Seed the database with a default colour scheme so templates can render
+        db.session.add(HouseStyle(style='',
+                                  primary_color="#003366",
+                                  secondary_color="#ffffff"))
         db.session.commit()
     print('Database initialized.')
 
@@ -234,12 +241,15 @@ def upload():
 @app.route('/style', methods=['GET', 'POST'])
 @login_required
 def edit_style():
-    """Allow the administrator to edit the LaTeX house style."""
+    """Allow the administrator to edit the LaTeX house style and colours."""
     if not current_user.is_admin:
         abort(403)
     style = HouseStyle.query.first()
     if request.method == 'POST':
         style.style = request.form.get('style', '')
+        # Persist selected colours so the UI can reflect the configured theme
+        style.primary_color = request.form.get('primary_color', style.primary_color)
+        style.secondary_color = request.form.get('secondary_color', style.secondary_color)
         db.session.commit()
         flash('Style updated')
     return render_template('style.html', style=style)
@@ -252,6 +262,17 @@ def edit_style():
 def inject_user():
     """Make current_user available in all templates."""
     return dict(current_user=current_user)
+
+@app.context_processor
+def inject_house_style():
+    """Expose the configured house style colours to templates."""
+    style = HouseStyle.query.first()
+    if not style:
+        # Ensure a style row exists even in fresh databases (e.g. tests)
+        style = HouseStyle(style='', primary_color="#003366", secondary_color="#ffffff")
+        db.session.add(style)
+        db.session.commit()
+    return dict(house_style=style)
 
 # ----------------------------------------------------------------------------
 # Run the application (only when executed directly)

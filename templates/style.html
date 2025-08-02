@@ -2,6 +2,14 @@
 {% block content %}
 <h2>House Style</h2>
 <form method="post">
+    <!-- Colour pickers let the admin define the UI theme -->
+    <label>Primary colour
+        <input type="color" name="primary_color" value="{{ style.primary_color }}">
+    </label>
+    <label>Secondary colour
+        <input type="color" name="secondary_color" value="{{ style.secondary_color }}">
+    </label>
+    <!-- Arbitrary LaTeX preamble or additional configuration -->
     <textarea name="style" rows="20">{{ style.style }}</textarea>
     <button type="submit">Save</button>
 </form>
