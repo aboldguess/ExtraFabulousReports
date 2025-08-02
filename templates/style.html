@@ -1,16 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>House Style</h2>
+<h2 class="mb-3">House Style</h2>
 <form method="post">
     <!-- Colour pickers let the admin define the UI theme -->
-    <label>Primary colour
-        <input type="color" name="primary_color" value="{{ style.primary_color }}">
-    </label>
-    <label>Secondary colour
-        <input type="color" name="secondary_color" value="{{ style.secondary_color }}">
-    </label>
+    <div class="mb-3">
+        <label class="form-label">Primary colour
+            <input class="form-control form-control-color" type="color" name="primary_color" value="{{ style.primary_color }}">
+        </label>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Secondary colour
+            <input class="form-control form-control-color" type="color" name="secondary_color" value="{{ style.secondary_color }}">
+        </label>
+    </div>
     <!-- Arbitrary LaTeX preamble or additional configuration -->
-    <textarea name="style" rows="20">{{ style.style }}</textarea>
-    <button type="submit">Save</button>
+    <textarea class="form-control mb-3" name="style" rows="20">{{ style.style }}</textarea>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
 {% endblock %}

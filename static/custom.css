@@ -1,0 +1,30 @@
+/*
+ * custom.css - Additional styling for ExtraFabulousReports
+ *
+ * This stylesheet adds subtle enhancements on top of Bootstrap to
+ * make the interface feel more polished and visually engaging.
+ */
+
+/* The body gets a gentle gradient based on the chosen theme colours */
+body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(180deg, var(--secondary-color) 0%, #f8f9fa 100%);
+    min-height: 100vh;
+}
+
+/* Add a soft shadow to the navigation bar for depth */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Provide vertical spacing for the main content area */
+main {
+    padding-top: 2rem;
+}
+
+/* Display document list items as flexible rows */
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
