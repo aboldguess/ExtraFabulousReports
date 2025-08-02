@@ -12,18 +12,35 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 - Helper to programmatically build LaTeX equation blocks
 
 ## Quick start
-1. Install dependencies:
-   ```bash
-   python -m pip install -r requirements.txt
-   ```
-2. Initialize the database and run the development server:
-   ```bash
-   python -m flask --app app.py init-db
-   python -m flask --app app.py run
-   ```
-   The `python -m flask` form ensures the CLI is available even if the `flask`
-   executable is not on your system's `PATH`, which is common on Windows.
-3. Open your browser at http://localhost:5000 and create the first user. The first registered account automatically becomes the administrator.
+1. Create and activate a virtual environment:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+2. Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3. Initialize the database and run the development server:
+    ```bash
+    python -m flask --app app.py init-db
+    python -m flask --app app.py run
+    ```
+    The `python -m flask` form ensures the CLI is available even if the `flask`
+    executable is not on your system's `PATH`, which is common on Windows.
+4. Open your browser at http://localhost:5000 and create the first user. The first registered account automatically becomes the administrator.
+
+## Raspberry Pi helper script
+
+The `efr.sh` script simplifies setup on a Raspberry Pi by creating a virtual
+environment, installing dependencies and starting the server:
+
+```bash
+./efr.sh [-p PORT] [--prod]
+```
+
+- `-p` or `--port` selects the listening port (default `5000`).
+- `-P` or `--prod` runs in production mode with debug disabled.
 
 ## Tests
 Run the minimal test suite with:
