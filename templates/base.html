@@ -4,6 +4,27 @@
     <meta charset="utf-8">
     <title>ExtraFabulousReports</title>
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    {# Inline style block applies administrator-defined colours #}
+    {% if house_style %}
+    <style>
+    :root {
+        /* Expose colours as CSS variables for easy reuse */
+        --primary-color: {{ house_style.primary_color }};
+        --secondary-color: {{ house_style.secondary_color }};
+    }
+    header, nav a, button {
+        /* Use primary colour for main chrome elements */
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+    }
+    body {
+        background-color: var(--secondary-color);
+    }
+    a {
+        color: var(--primary-color);
+    }
+    </style>
+    {% endif %}
 </head>
 <body>
 <header>
