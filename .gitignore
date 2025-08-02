@@ -1,0 +1,7 @@
+__pycache__/
+instance/
+*.pyc
+reports.db
+.tmp*
+tmp_*.tex
+tmp_*.pdf

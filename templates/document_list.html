@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Documents</h2>
+<p><a href="{{ url_for('new_document') }}">Create new document</a></p>
+<ul>
+    {% for doc in documents %}
+    <li>
+        <a href="{{ url_for('edit_document', doc_id=doc.id) }}">{{ doc.title }}</a>
+        [<a href="{{ url_for('compile_document', doc_id=doc.id) }}">compile</a>]
+    </li>
+    {% else %}
+    <li>No documents yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
