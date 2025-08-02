@@ -144,6 +144,22 @@ def logout():
     return redirect(url_for('login'))
 
 # ----------------------------------------------------------------------------
+# Informational routes
+# ----------------------------------------------------------------------------
+
+@app.route('/instructions')
+def instructions():
+    """Display general usage instructions."""
+    # Provide a simple page outlining how to use the application
+    return render_template('instructions.html')
+
+@app.route('/help')
+def help_page():
+    """Display a help and troubleshooting page."""
+    # Basic guidance and contact information for end users
+    return render_template('help.html')
+
+# ----------------------------------------------------------------------------
 # Document management routes
 # ----------------------------------------------------------------------------
 

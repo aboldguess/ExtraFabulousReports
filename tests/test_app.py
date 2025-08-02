@@ -24,3 +24,18 @@ def test_register_and_login(client):
     # Login
     response = client.post('/login', data={'username': 'alice', 'password': 'pw'}, follow_redirects=True)
     assert b'Your Documents' in response.data
+
+
+def test_instructions_and_help_pages(client):
+    """Ensure the informational pages render without authentication."""
+    assert b'Instructions' in client.get('/instructions').data
+    assert b'Help' in client.get('/help').data
+
+
+def test_navbar_links_visible_after_login(client):
+    """After logging in, the navigation bar should expose instruction and help links."""
+    client.post('/register', data={'username': 'bob', 'password': 'pw'})
+    response = client.post('/login', data={'username': 'bob', 'password': 'pw'}, follow_redirects=True)
+    # The document list page should include the navigation links
+    assert b'Instructions' in response.data
+    assert b'Help' in response.data

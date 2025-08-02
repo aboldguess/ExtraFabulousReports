@@ -39,15 +39,21 @@
     <div class="container-fluid">
         <a class="navbar-brand text-light" href="{{ url_for('list_documents') }}">ExtraFabulousReports</a>
         <div class="collapse navbar-collapse">
-            {% if current_user.is_authenticated %}
             <ul class="navbar-nav ms-auto">
+                {# Links to general information pages available to all users #}
+                <li class="nav-item"><a class="nav-link text-light" href="{{ url_for('instructions') }}">Instructions</a></li>
+                <li class="nav-item"><a class="nav-link text-light" href="{{ url_for('help_page') }}">Help</a></li>
+                {% if current_user.is_authenticated %}
                 <li class="nav-item"><a class="nav-link text-light" href="{{ url_for('list_documents') }}">Documents</a></li>
                 {% if current_user.is_admin %}
                 <li class="nav-item"><a class="nav-link text-light" href="{{ url_for('edit_style') }}">House Style</a></li>
                 {% endif %}
                 <li class="nav-item"><a class="nav-link text-light" href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link text-light" href="{{ url_for('login') }}">Login</a></li>
+                <li class="nav-item"><a class="nav-link text-light" href="{{ url_for('register') }}">Register</a></li>
+                {% endif %}
             </ul>
-            {% endif %}
         </div>
     </div>
 </nav>
