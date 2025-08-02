@@ -8,6 +8,7 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 - Create, edit and compile LaTeX documents into PDFs
 - Upload images for use in documents
 - Dedicated instructions and help pages linked in the navigation bar
+- Simple markup for figures with captions and cross-references
 
 ## Quick start
 1. Install dependencies:

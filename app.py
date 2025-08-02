@@ -7,6 +7,7 @@ configurable LaTeX house style.
 """
 
 import os
+import re
 import subprocess
 from datetime import datetime
 from flask import (Flask, render_template, request, redirect, url_for,
@@ -73,6 +74,64 @@ class HouseStyle(db.Model):
     primary_color = db.Column(db.String(7), default="#003366")
     # Secondary colour for page background and text
     secondary_color = db.Column(db.String(7), default="#ffffff")
+
+# ----------------------------------------------------------------------------
+# LaTeX helpers
+# ----------------------------------------------------------------------------
+
+def render_figures_and_refs(text: str) -> str:
+    """Replace custom figure and reference markup with proper LaTeX.
+
+    The editor allows users to insert figures using a compact syntax:
+
+    ``{{figure:path|caption|label}}``
+
+    - ``path`` points to the image file relative to the LaTeX document.
+    - ``caption`` is the text displayed below the figure.
+    - ``label`` is used for cross-referencing.
+
+    References are written as ``{{ref:label}}`` and expand to
+    ``Figure \ref{fig:label}``.
+
+    Parameters
+    ----------
+    text:
+        The raw document content entered by the user.
+
+    Returns
+    -------
+    str
+        The content with all figure and reference markers replaced by
+        LaTeX commands ready for compilation.
+    """
+
+    # Regular expression matching the custom figure syntax. The pattern
+    # captures the path, caption and label segments between the separators.
+    figure_pattern = re.compile(r"{{figure:([^|]+)\|([^|]+)\|([^}]+)}}")
+
+    def _figure_repl(match: re.Match) -> str:
+        """Build a full LaTeX figure environment from a regex match."""
+        path, caption, label = match.groups()
+        # The LaTeX environment includes a label with a "fig:" prefix so that
+        # references can point to it later.
+        return (
+            "\\begin{figure}[h]\n"
+            "\\centering\n"
+            f"\\includegraphics{{{path}}}\n"
+            f"\\caption{{{caption}}}\n"
+            f"\\label{{fig:{label}}}\n"
+            "\\end{figure}\n"
+        )
+
+    # Replace all occurrences of the custom figure syntax in the text.
+    text = figure_pattern.sub(_figure_repl, text)
+
+    # Substitute reference markers with LaTeX \ref commands. The reference
+    # uses the same label supplied in the figure definition above.
+    ref_pattern = re.compile(r"{{ref:([^}]+)}}")
+    text = ref_pattern.sub(lambda m: f"Figure \\ref{{fig:{m.group(1)}}}", text)
+
+    return text
 
 # ----------------------------------------------------------------------------
 # Flask-Login configuration
@@ -211,14 +270,16 @@ def compile_document(doc_id):
     if doc.author != current_user:
         abort(403)
     style = HouseStyle.query.first().style
-    # Build a temporary LaTeX file combining style and user content.
+    # Convert any custom figure or reference markers into actual LaTeX.
+    processed_content = render_figures_and_refs(doc.content)
+    # Build a temporary LaTeX file combining style and processed user content.
     # Each line is concatenated to avoid Python interpreting backslashes as
     # escape sequences.
     tex_source = (
         "\\documentclass{article}\n"
         f"{style}\n"
         "\\begin{document}\n"
-        f"{doc.content}\n"
+        f"{processed_content}\n"
         "\\end{document}"
     )
     tex_path = f'tmp_{doc.id}.tex'
