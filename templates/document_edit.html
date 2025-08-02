@@ -1,17 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>{% if document %}Edit{% else %}New{% endif %} Document</h2>
-<form method="post">
-    <label>Title <input name="title" value="{{ document.title if document else '' }}" required></label>
-    <label>Content</label>
-    <textarea name="content" rows="20">{{ document.content if document else '' }}</textarea>
-    <button type="submit">Save</button>
+<h2 class="mb-3">{% if document %}Edit{% else %}New{% endif %} Document</h2>
+<form method="post" class="mb-4">
+    <!-- Title field -->
+    <div class="mb-3">
+        <label class="form-label">Title
+            <input class="form-control" name="title" value="{{ document.title if document else '' }}" required>
+        </label>
+    </div>
+    <!-- Main document content area -->
+    <div class="mb-3">
+        <label class="form-label">Content</label>
+        <textarea class="form-control" name="content" rows="20">{{ document.content if document else '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
 
 <h3>Upload image</h3>
-<form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <button type="submit">Upload</button>
+<form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data" class="mb-3">
+    <input class="form-control" type="file" name="file" required>
+    <button type="submit" class="btn btn-secondary mt-2">Upload</button>
 </form>
 <p>After uploading, include image using <code>\includegraphics{path}</code>.</p>
 {% endblock %}
