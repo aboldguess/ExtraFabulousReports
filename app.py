@@ -9,6 +9,7 @@ configurable LaTeX house style.
 import os
 import re
 import subprocess
+import random  # Used by the lorem ipsum generator
 from datetime import datetime
 from flask import (Flask, render_template, request, redirect, url_for,
                    flash, send_file, abort)
@@ -194,6 +195,13 @@ def init_db():
         db.session.commit()
     print('Database initialized.')
 
+
+@app.cli.command('run-server')
+def run_server():
+    """Start the dev server on all interfaces for network access."""
+    # Bind to all interfaces so the server is reachable from other devices.
+    app.run(host='0.0.0.0', debug=True)
+
 # ----------------------------------------------------------------------------
 # Authentication routes
 # ----------------------------------------------------------------------------
@@ -253,6 +261,31 @@ def help_page():
     """Display a help and troubleshooting page."""
     # Basic guidance and contact information for end users
     return render_template('help.html')
+
+# ----------------------------------------------------------------------------
+# Utility routes
+# ----------------------------------------------------------------------------
+
+@app.route('/lorem')
+def lorem():
+    """Return placeholder Lorem Ipsum text for rapid prototyping."""
+    # Canonical set of filler sentences used to assemble paragraphs
+    sample_sentences = [
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    ]
+    # Number of paragraphs requested via query parameter; default to one
+    paragraphs = int(request.args.get('paras', 1))
+    blocks = []
+    for _ in range(paragraphs):
+        # Build each paragraph from a few random sentences
+        sentences = [random.choice(sample_sentences) for _ in range(3)]
+        blocks.append(" ".join(sentences))
+    # Separate paragraphs with blank lines as expected for plain text
+    return "\n\n".join(blocks)
 
 # ----------------------------------------------------------------------------
 # Document management routes
@@ -324,9 +357,19 @@ def compile_document(doc_id):
         f.write(tex_source)
     # Run pdflatex; suppress output to keep logs clean
     try:
-        subprocess.run(['pdflatex', tex_path], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    except Exception as e:
-        flash(f'Compilation failed: {e}')
+        subprocess.run(
+            ['pdflatex', tex_path],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except FileNotFoundError:
+        # Provide a helpful error when the LaTeX toolchain is missing
+        flash('pdflatex not found. Please install a LaTeX distribution.')
+        return redirect(url_for('edit_document', doc_id=doc.id))
+    except subprocess.CalledProcessError:
+        # Catch compilation errors and surface them to the user
+        flash('Compilation failed. Check your LaTeX content for errors.')
         return redirect(url_for('edit_document', doc_id=doc.id))
     return send_file(pdf_path, as_attachment=True)
 
