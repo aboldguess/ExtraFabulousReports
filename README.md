@@ -19,9 +19,8 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 2. Initialize the database and run the development server:
    ```bash
    python -m flask --app app.py init-db
-   # Bind to all interfaces so the app is reachable from other devices on the
-   # network.
-   python -m flask --app app.py run --host=0.0.0.0
+   # The custom run-server command binds to all interfaces for network access.
+   python -m flask --app app.py run-server
    ```
    The `python -m flask` form ensures the CLI is available even if the `flask`
    executable is not on your system's `PATH`, which is common on Windows.
