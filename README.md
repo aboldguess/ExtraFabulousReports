@@ -19,11 +19,13 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 2. Initialize the database and run the development server:
    ```bash
    python -m flask --app app.py init-db
-   python -m flask --app app.py run
+   # Bind to all interfaces so the app is reachable from other devices on the
+   # network.
+   python -m flask --app app.py run --host=0.0.0.0
    ```
    The `python -m flask` form ensures the CLI is available even if the `flask`
    executable is not on your system's `PATH`, which is common on Windows.
-3. Open your browser at http://localhost:5000 and create the first user. The first registered account automatically becomes the administrator.
+3. Open your browser at http://localhost:5000 (or replace `localhost` with the server's IP address from another device) and create the first user. The first registered account automatically becomes the administrator.
 
 ## Tests
 Run the minimal test suite with:

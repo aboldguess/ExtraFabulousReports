@@ -410,4 +410,6 @@ def inject_house_style():
 # ----------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Listen on all interfaces to allow access from other machines on the
+    # network during development.
+    app.run(host='0.0.0.0', debug=True)
