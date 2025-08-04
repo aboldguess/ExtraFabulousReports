@@ -13,51 +13,58 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 
 ## Setup
 
-The project supports both Windows and Linux/Raspberry Pi systems. A small
-setup script is provided for Unix-like platforms to make installation
-straightforward.
+The project supports both Windows and Linux/Raspberry Pi systems. Small helper scripts make installation straightforward.
 
 ### Linux/macOS/Raspberry Pi
 1. **Create a virtual environment and install dependencies**:
    ```bash
-   ./setup_extrafabulous_reports_env.sh
+   ./xfabreps_setup_env.sh
    ```
-   This script creates a `venv` folder and installs everything from
-   `requirements.txt`.
-2. **Initialize the database and run the server**:
+2. **Activate the environment and initialise the database**:
    ```bash
+   source venv/bin/activate
    python -m flask --app app.py init-db
-   ./run_extrafabulous_reports_server.sh
+   ```
+3. **Run the server**:
+   ```bash
+   ./xfabreps_run_server.sh --port 8000   # choose any port you like
    ```
 
 ### Windows
-1. **Create a virtual environment**:
+1. **Create a virtual environment and install dependencies**:
    ```powershell
-   py -3 -m venv venv
-   venv\Scripts\activate
-   pip install -r requirements.txt
+   .\xfabreps_setup_env.ps1
    ```
-2. **Initialize the database and run the server**:
+2. **Activate the environment and initialise the database**:
    ```powershell
+   .\venv\Scripts\Activate.ps1
    python -m flask --app app.py init-db
-   python -m flask --app app.py run-server
+   ```
+3. **Run the server**:
+   ```powershell
+   .\xfabreps_run_server.ps1 -Port 8000   # add -Prod to use Waitress
    ```
 
 ## Running the server
 
-The custom `run-server` command exposes the app on the network. You may select
-the port and whether to use the production-ready Waitress server.
+Both scripts support changing the port and enabling a production-ready Waitress server.
 
 ```bash
 # Development server on port 8000
-./run_extrafabulous_reports_server.sh --port 8000
+./xfabreps_run_server.sh --port 8000
 
 # Production server on default port 5000
-./run_extrafabulous_reports_server.sh --prod
+./xfabreps_run_server.sh --prod
 ```
 
-On Windows use `python -m flask --app app.py run-server` in place of the shell
-script.
+Windows equivalents:
+```powershell
+# Development server on port 8000
+.\xfabreps_run_server.ps1 -Port 8000
+
+# Production server on default port 5000
+.\xfabreps_run_server.ps1 -Prod
+```
 
 When the server starts it prints the full URL so users know where to connect.
 
