@@ -12,19 +12,43 @@ ExtraFabulousReports is a lightweight collaborative web application for authorin
 - Helper to programmatically build LaTeX equation blocks
 
 ## Quick start
-1. Install dependencies:
+Follow these steps to get ExtraFabulousReports running. Commands are provided
+for both Windows PowerShell and Raspberry Pi/Linux terminals.
+
+1. **Create a virtual environment**
+   - *Windows*:
+     ```powershell
+     python -m venv venv
+     .\venv\Scripts\Activate.ps1
+     ```
+   - *Raspberry Pi/Linux*:
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+2. **Install dependencies**
    ```bash
-   python -m pip install -r requirements.txt
+   pip install -r requirements.txt
    ```
-2. Initialize the database and run the development server:
+3. **Initialize the database**
    ```bash
    python -m flask --app app.py init-db
-   # The custom run-server command binds to all interfaces for network access.
-   python -m flask --app app.py run-server
    ```
-   The `python -m flask` form ensures the CLI is available even if the `flask`
-   executable is not on your system's `PATH`, which is common on Windows.
-3. Open your browser at http://localhost:5000 (or replace `localhost` with the server's IP address from another device) and create the first user. The first registered account automatically becomes the administrator.
+4. **Start the server**
+   - *Windows*:
+     ```powershell
+     .\XFabReps_windows.ps1 -Port 5000
+     ```
+   - *Raspberry Pi/Linux*:
+     ```bash
+     ./XFabReps_rpi.sh -p 5000
+     ```
+   Append `-Production` or `--production` to use a production-ready server.
+   The scripts print a summary so you always know the port and mode.
+
+5. Open your browser at `http://localhost:PORT` (replace `PORT` with your chosen
+   value) and create the first user. The first registered account automatically
+   becomes the administrator.
 
 ## Tests
 Run the minimal test suite with:

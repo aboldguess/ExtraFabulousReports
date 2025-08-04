@@ -453,6 +453,34 @@ def inject_house_style():
 # ----------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    # Listen on all interfaces to allow access from other machines on the
-    # network during development.
-    app.run(host='0.0.0.0', debug=True)
+    # Allow the user to tweak how the server runs via command-line flags.
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Run the ExtraFabulousReports web application."
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=5000,
+        help="Port number to listen on (default: 5000).",
+    )
+    parser.add_argument(
+        "--production",
+        action="store_true",
+        help="Use a production-ready server instead of Flask's development server.",
+    )
+    args = parser.parse_args()
+
+    # Provide immediate feedback so the user knows how the app is running.
+    mode = "production" if args.production else "development"
+    print(f"Starting ExtraFabulousReports on port {args.port} in {mode} mode")
+
+    # Listen on all interfaces to allow access from other machines on the network.
+    if args.production:
+        # Import Waitress lazily so unit tests and basic dev usage don't require it.
+        from waitress import serve
+
+        serve(app, host='0.0.0.0', port=args.port)
+    else:
+        app.run(host='0.0.0.0', port=args.port, debug=True)
