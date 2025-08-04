@@ -10,7 +10,9 @@ import os
 import re
 import subprocess
 import random  # Used by the lorem ipsum generator
+import logging  # Provides simple debug logging to the console
 from datetime import datetime
+import click  # Used for the custom Flask CLI command
 from flask import (Flask, render_template, request, redirect, url_for,
                    flash, send_file, abort)
 from flask_sqlalchemy import SQLAlchemy
@@ -26,6 +28,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'change-me'  # In production use a proper secret!
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reports.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configure root logger to emit messages to the console. This assists with
+# debugging and makes it clear which host/port the server is bound to.
+logging.basicConfig(level=logging.INFO,
+                    format='[%(levelname)s] %(message)s')
 
 # Ensure an upload directory exists for user images
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -196,11 +203,46 @@ def init_db():
     print('Database initialized.')
 
 
+def start_app(host: str, port: int, use_prod: bool) -> None:
+    """Launch the Flask application.
+
+    Parameters
+    ----------
+    host:
+        Interface to bind to. Use ``0.0.0.0`` to listen on all network
+        interfaces so the service is reachable from other devices.
+    port:
+        TCP port to listen on.
+    use_prod:
+        When ``True`` the function attempts to serve the app using the
+        ``waitress`` production WSGI server. If Waitress is unavailable it
+        falls back to Flask's built-in server without debug mode enabled.
+    """
+
+    if use_prod:
+        try:
+            from waitress import serve
+            logging.info("Starting production server at http://%s:%d", host, port)
+            serve(app, host=host, port=port)
+            return
+        except ImportError:
+            logging.warning(
+                "Waitress not installed; falling back to Flask development server")
+    # Default path is the Flask development server with optional debug output.
+    logging.info("Starting development server at http://%s:%d", host, port)
+    app.run(host=host, port=port, debug=not use_prod)
+
+
 @app.cli.command('run-server')
-def run_server():
-    """Start the dev server on all interfaces for network access."""
-    # Bind to all interfaces so the server is reachable from other devices.
-    app.run(host='0.0.0.0', debug=True)
+@click.option('--host', default='0.0.0.0', show_default=True,
+              help='Interface to bind to for network access')
+@click.option('--port', default=5000, show_default=True, type=int,
+              help='Port number to listen on')
+@click.option('--prod/--dev', default=False,
+              help='Use Waitress production server if installed')
+def run_server(host: str, port: int, prod: bool) -> None:
+    """Start the web server, exposing it on the requested interface/port."""
+    start_app(host, port, prod)
 
 # ----------------------------------------------------------------------------
 # Authentication routes
@@ -453,6 +495,19 @@ def inject_house_style():
 # ----------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    # Listen on all interfaces to allow access from other machines on the
-    # network during development.
-    app.run(host='0.0.0.0', debug=True)
+    import argparse
+
+    # Provide a small CLI so users can easily select host, port and whether to
+    # use the production server. Defaults ensure the app is reachable from
+    # other devices on the network.
+    parser = argparse.ArgumentParser(
+        description='Run the ExtraFabulousReports development server')
+    parser.add_argument('--host', default='0.0.0.0',
+                        help='Network interface to bind to')
+    parser.add_argument('--port', type=int, default=5000,
+                        help='Port number to listen on')
+    parser.add_argument('--prod', action='store_true',
+                        help='Use Waitress for a production-ready server')
+    cmd_args = parser.parse_args()
+
+    start_app(cmd_args.host, cmd_args.port, cmd_args.prod)
