@@ -305,6 +305,51 @@ def help_page():
     return render_template('help.html')
 
 # ----------------------------------------------------------------------------
+# Profile and account routes
+# ----------------------------------------------------------------------------
+
+@app.route('/profiles')
+@login_required
+def manage_profiles():
+    """Display profile management interface for the current user."""
+    logging.info("Manage Profiles page accessed by %s", current_user.username)
+    return render_template('manage_profiles.html')
+
+
+@app.route('/learning-zone')
+@login_required
+def learning_zone():
+    """Present learning resources to the user."""
+    logging.info("Learning Zone page accessed by %s", current_user.username)
+    return render_template('learning_zone.html')
+
+
+@app.route('/my-details')
+@login_required
+def my_details():
+    """Show personal account information for the current user."""
+    logging.info("My Details page accessed by %s", current_user.username)
+    return render_template('my_details.html')
+
+
+@app.route('/subscription-details')
+@login_required
+def subscription_details():
+    """Display subscription information for the current user."""
+    logging.info("Subscription Details page accessed by %s", current_user.username)
+    return render_template('subscription_details.html')
+
+
+@app.route('/manage-users')
+@login_required
+def manage_users():
+    """Allow administrators to manage user accounts."""
+    if not current_user.is_admin:
+        abort(403)
+    logging.info("Manage Users page accessed by admin %s", current_user.username)
+    return render_template('manage_users.html')
+
+# ----------------------------------------------------------------------------
 # Utility routes
 # ----------------------------------------------------------------------------
 

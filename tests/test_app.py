@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from app import app, db, Document, render_figures_and_refs, build_equation
+from xfabreps_app import app, db, Document, render_figures_and_refs, build_equation
 
 @pytest.fixture
 def client():
@@ -95,3 +95,28 @@ def test_delete_document_requires_owner(client):
     # Ensure document still exists
     with app.app_context():
         assert Document.query.count() == 1
+
+
+def test_profile_menu_links_present(client):
+    """Dropdown menu should list profile-related options after login."""
+    client.post('/register', data={'username': 'charlie', 'password': 'pw'})
+    response = client.post('/login', data={'username': 'charlie', 'password': 'pw'}, follow_redirects=True)
+    # The main page after login should include all profile menu options
+    assert b'Manage Profiles' in response.data
+    assert b'Learning Zone' in response.data
+    assert b'My Details' in response.data
+    assert b'Subscription Details' in response.data
+    assert b'Sign out' in response.data
+
+
+def test_manage_users_admin_only(client):
+    """Only administrators can access the manage users screen."""
+    # First registered user becomes admin
+    client.post('/register', data={'username': 'admin', 'password': 'pw'})
+    client.post('/login', data={'username': 'admin', 'password': 'pw'})
+    assert client.get('/manage-users').status_code == 200
+    client.get('/logout')
+    # A non-admin user should receive a 403 response
+    client.post('/register', data={'username': 'dave', 'password': 'pw'})
+    client.post('/login', data={'username': 'dave', 'password': 'pw'})
+    assert client.get('/manage-users').status_code == 403
