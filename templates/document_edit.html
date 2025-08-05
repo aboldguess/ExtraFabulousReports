@@ -15,10 +15,12 @@
         <div class="mb-2">
             <button type="button" id="btn-heading" class="btn btn-outline-secondary btn-sm">Heading</button>
             <button type="button" id="btn-subheading" class="btn btn-outline-secondary btn-sm">Subheading</button>
-            <button type="button" id="btn-figure" class="btn btn-outline-secondary btn-sm">Figure</button>
-            <button type="button" id="btn-reference" class="btn btn-outline-secondary btn-sm">Reference</button>
+            <button type="button" id="btn-subsubheading" class="btn btn-outline-secondary btn-sm">Subsubheading</button>
+            <button type="button" id="btn-insert-figure" class="btn btn-outline-secondary btn-sm">Insert Figure</button>
+            <button type="button" id="btn-insert-reference" class="btn btn-outline-secondary btn-sm">Insert Figure Reference</button>
             <button type="button" id="btn-lorem" class="btn btn-outline-secondary btn-sm">Lorem Ipsum</button>
         </div>
+        <div class="form-text mb-2">Select text and click a button to apply formatting.</div>
         <textarea class="form-control" name="content" rows="20">{{ document.content if document else '' }}</textarea>
     </div>
     <button type="submit" class="btn btn-primary">Save</button>

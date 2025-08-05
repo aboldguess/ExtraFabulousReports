@@ -496,6 +496,32 @@ def upload():
     return redirect(request.referrer or url_for('list_documents'))
 
 # ----------------------------------------------------------------------------
+# Figure listing endpoint
+# ----------------------------------------------------------------------------
+
+@app.route('/figures')
+@login_required
+def list_figures():
+    """Return a JSON list of uploaded figures for the editor."""
+    files = []
+    upload_dir = app.config['UPLOAD_FOLDER']
+    # Iterate over upload directory and build metadata for each image
+    for filename in os.listdir(upload_dir):
+        path = os.path.join(upload_dir, filename)
+        if os.path.isfile(path):
+            files.append({
+                'filename': filename,
+                # Path used inside LaTeX documents (no leading slash)
+                'path': f'static/uploads/{filename}',
+                # Fully qualified URL for displaying thumbnails in the UI
+                'url': url_for('static', filename=f'uploads/{filename}'),
+                # Suggested label derived from the filename
+                'label': os.path.splitext(filename)[0]
+            })
+    app.logger.info("Listing %d available figures", len(files))
+    return {'figures': files}
+
+# ----------------------------------------------------------------------------
 # House style configuration
 # ----------------------------------------------------------------------------
 
