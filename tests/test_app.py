@@ -53,6 +53,22 @@ def test_render_figures_and_refs():
     assert "Figure \\ref{fig:sample}" in processed
 
 
+def test_figures_endpoint_lists_uploads(client):
+    """The figures endpoint should list uploaded images for selection."""
+    # Register and login to access the protected endpoint
+    client.post('/register', data={'username': 'eve', 'password': 'pw'})
+    client.post('/login', data={'username': 'eve', 'password': 'pw'})
+    upload_dir = os.path.join('static', 'uploads')
+    os.makedirs(upload_dir, exist_ok=True)
+    test_file = os.path.join(upload_dir, 'test.png')
+    with open(test_file, 'wb') as f:
+        f.write(b'fake')
+    response = client.get('/figures')
+    data = response.get_json()
+    assert any(fig['filename'] == 'test.png' for fig in data['figures'])
+    os.remove(test_file)
+
+
 def test_build_equation():
     """Equation builder should assemble a full LaTeX equation block."""
     result = build_equation("E", "mc^2", label="mass_energy")
