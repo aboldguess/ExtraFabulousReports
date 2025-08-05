@@ -33,8 +33,9 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Build the Python command dynamically
-CMD=(python app.py --port "$PORT")
+# Build the Python command dynamically. Use the descriptive module name
+# rather than a generic app.py.
+CMD=(python xfabreps_app.py --port "$PORT")
 if [[ "$USE_PROD" -eq 1 ]]; then
   CMD+=("--prod")
 fi

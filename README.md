@@ -23,7 +23,7 @@ The project supports both Windows and Linux/Raspberry Pi systems. Small helper s
 2. **Activate the environment and initialise the database**:
    ```bash
    source venv/bin/activate
-   python -m flask --app app.py init-db
+   python -m flask --app xfabreps_app.py init-db
    ```
 3. **Run the server**:
    ```bash
@@ -38,7 +38,7 @@ The project supports both Windows and Linux/Raspberry Pi systems. Small helper s
 2. **Activate the environment and initialise the database**:
    ```powershell
    .\venv\Scripts\Activate.ps1
-   python -m flask --app app.py init-db
+   python -m flask --app xfabreps_app.py init-db
    ```
 3. **Run the server**:
    ```powershell
@@ -78,7 +78,7 @@ python -m pytest
 Generate a LaTeX equation environment from Python code:
 
 ```python
-from app import build_equation
+from xfabreps_app import build_equation
 
 latex = build_equation("E", "mc^2", label="mass_energy")
 print(latex)

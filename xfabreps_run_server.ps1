@@ -14,7 +14,8 @@ param(
     [string]$Host = "0.0.0.0"
 )
 
-$cmd = @("python", "app.py", "--host", $Host, "--port", $Port)
+# Build the command using the descriptive application filename.
+$cmd = @("python", "xfabreps_app.py", "--host", $Host, "--port", $Port)
 if ($Prod) { $cmd += "--prod" }
 Write-Host "Starting ExtraFabulousReports with command: $($cmd -join ' ')"
 & $cmd
